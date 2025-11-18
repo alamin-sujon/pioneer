@@ -76,7 +76,7 @@
 
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import {
   DndContext,
@@ -100,6 +100,7 @@ import TodoCard from "./TodoCard";
 import { ITodo } from "@/types/todo.type";
 
 export default function Todos({ todos }: { todos: ITodo[] }) {
+  console.log({ todos });
   // Local state for sorting
   const [localTodos, setLocalTodos] = useState<ITodo[]>(todos);
 
@@ -149,7 +150,12 @@ export default function Todos({ todos }: { todos: ITodo[] }) {
     const params = new URLSearchParams(searchParams.toString());
     params.set("search", String(search.trim()));
     router.push(`?${params.toString()}`);
+    router.refresh();
   };
+
+  useEffect(() => {
+    setLocalTodos(todos);
+  }, [todos]);
 
   return (
     <div className="drag-overlay-fix">
@@ -159,23 +165,6 @@ export default function Todos({ todos }: { todos: ITodo[] }) {
       </div>
 
       <div className="flex flex-col md:flex-row items-center justify-between gap-4 mt-8 mb-6">
-        {/* <form
-          onSubmit={handleSearch}
-          className="flex items-center border w-full flex-1 bg-white shadow-sm rounded-md"
-        >
-          <input
-            type="text"
-            onChange={(e) => setSearch(e.target.value)}
-            placeholder="Search your task here..."
-            className="w-full px-3 focus:outline-none"
-          />
-          <button
-            type="submit"
-            className="bg-[#5272FF] cursor-pointer w-10 rounded flex justify-center py-3"
-          >
-            <svg  />
-          </button>
-        </form> */}
         <form
           onSubmit={handleSearch}
           className="flex items-center w-full flex-1 bg-white shadow-sm   rounded-md"
@@ -201,7 +190,6 @@ export default function Todos({ todos }: { todos: ITodo[] }) {
 
       <h2 className="text-xl font-semibold mb-4">Your Tasks</h2>
 
-      {/* ===== DND-KIT CONTEXT START ===== */}
       <DndContext
         sensors={sensors}
         collisionDetection={closestCenter}
@@ -218,7 +206,6 @@ export default function Todos({ todos }: { todos: ITodo[] }) {
           </div>
         </SortableContext>
       </DndContext>
-      {/* ===== DND-KIT CONTEXT END ===== */}
     </div>
   );
 }
@@ -263,7 +250,6 @@ export function SortableTodoItem({ task }: any) {
         <FiGrid size={18} className="text-gray-600 " />
       </div>
 
-      {/* Your Task Card */}
       <TodoCard task={task} />
     </div>
   );
